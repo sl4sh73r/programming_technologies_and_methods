@@ -23,6 +23,7 @@
 * Способ организации линейного связанный список: Стэк	
 
 * Алгоритм сортировки: Естественное двухпутевое слияние
+---
 ссылка для просмотра отчета:
 ```
 https://docs.google.com/document/d/1-J-hKpGlXDesP2F3f3wVbY9yOIQ4qsXi/edit?usp=sharing&ouid=111408705286362804036&rtpof=true&sd=true
