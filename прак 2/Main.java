@@ -1,21 +1,23 @@
 import java.util.*;
 
-//        1.	FIRST(v) - возвращает индекс первой вершины, смежной с вершиной v. Если вершина v не имеет смежных вершин, то возвращается "нулевая" вершина .
-//        2.	NEXT(v, i)- возвращает индекс вершины, смежной с вершиной v, следующий за индексом i. Если i — это индекс последней вершины, смежной с вершиной v, то возвращается .
-//        3.	VERTEX(v, i) - возвращает вершину с индексом i из множества вершин, смежных с v.
-//        4.	ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ
-//        5.	ADD_Е(v, w, c) - добавить ДУГУ (здесь c — вес, цена дуги (v,w))
-//        6.	DEL_V(<имя>) - удалить УЗЕЛ
-//        7.	DEL_Е(v, w) – удалить ДУГУ
-//        8.	EDIT_V(<имя>, <новое значение метки или маркировки>) - изменить метку (маркировку) УЗЛА
-//        9.	EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
+/*      1.	FIRST(v) - возвращает индекс первой вершины, смежной с вершиной v. Если вершина v не имеет смежных вершин, то возвращается "нулевая" вершина .
+        2.	NEXT(v, i)- возвращает индекс вершины, смежной с вершиной v, следующий за индексом i. Если i — это индекс последней вершины, смежной с вершиной v, то возвращается .
+        3.	VERTEX(v, i) - возвращает вершину с индексом i из множества вершин, смежных с v.
+        4.	ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ
+        5.	ADD_Е(v, w, c) - добавить ДУГУ (здесь c — вес, цена дуги (v,w))
+        6.	DEL_V(<имя>) - удалить УЗЕЛ
+        7.	DEL_Е(v, w) – удалить ДУГУ
+        8.	EDIT_V(<имя>, <новое значение метки или маркировки>) - изменить метку (маркировку) УЗЛА
+        9.	EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ*/
 
 class Graph<T> {
 
     // Мы используем Hashmap для хранения ребер в графе
+
     private Map<T, List<T>> map = new HashMap<>();
     private Map<T,String> markslist=new HashMap<>();
     private Map<String,Integer> weightlist=new HashMap<>();
+
     //добавить узел
     public void addVertex(T s){
         map.put(s, new LinkedList<T>());
@@ -25,9 +27,9 @@ class Graph<T> {
         markslist.put(s,mark);
         map.put(s, new LinkedList<T>());
     }
+
     // Эта функция создает дугу
     // между source и destination
-
     public void addEdge(T source,
                         T destination,
                         int weight,
@@ -39,7 +41,6 @@ class Graph<T> {
 
         if (!map.containsKey(destination))
             addVertex(destination);
-
         map.get(source).add(destination);
         weightlist.put(indexEdge,weight);
         if (bidirectional == true) {
@@ -116,15 +117,13 @@ class Graph<T> {
         }
     }
     // Эта функция показывает, присутствует ли ребро или нет.
-    public void hasEdge(T s, T d)
+    public boolean hasEdge(T s, T d)
     {
         if (map.get(s).contains(d)) {
-            System.out.println("Граф имеет ребро между "
-                    + s + " и " + d + ".");
+            return true;
         }
         else {
-            System.out.println("Граф не имеет ребра между "
-                    + s + " и " + d + ".");
+            return false;
         }
     }
     public void nextValue(T sourse,int i) {
@@ -156,6 +155,7 @@ class Graph<T> {
 
         }
     }
+
     // Выводит список смежности каждой вершины.
     @Override
     public String toString()
@@ -177,47 +177,86 @@ class Graph<T> {
 
         return (builder.toString());
     }
+    public String showGraph(){
+        StringBuilder builder1 = new StringBuilder();
+        ArrayList<String> rowlist = new ArrayList();
+        ArrayList<String> columnlist = new ArrayList();
+        final String RESET="\u001B[0m";
+        final String RED = "\u001B[31m";
+        //получаем массивы с элементами row и column
+        for (T v : map.keySet()) {
+            rowlist.add(v+"");
+            for (T w : map.get(v)) {
+                columnlist.add(v+""+w);
+            }
+        }
 
+
+        //заподняем билдер элементами(подписанная матрица инцидентности)
+        builder1.append("\t");
+        for (int i = 0; i < columnlist.size(); i++) {
+            builder1.append(RED+""+"["+columnlist.get(i)+"]  "+RESET);
+        }
+        builder1.append("\n");
+
+
+        int[][] matrix = new int[columnlist.size()][rowlist.size()];
+        for (int i=0;i<columnlist.size();i++){
+            for (int j=0;j<rowlist.size();j++){
+                String tmp1=columnlist.get(i);
+                String tmp2=rowlist.get(j);
+                if (columnlist.get(i).contains(rowlist.get(j))){
+                    if(columnlist.get(i).indexOf(rowlist.get(j))==0){
+                        matrix[j][i]=-1;
+                    }
+                    else {
+                        matrix[j][i]=1;
+                    }
+                }
+                else{
+                    matrix[j][i]=0;
+                }
+            }
+        }
+        //заподняем билдер элементами(подписанная матрица инцидентности)(column)
+        int i=0;
+        for (T v : map.keySet()) {
+            builder1.append(RED+"["+v+"]"+ RESET +" ");
+            for (int j=0;j<columnlist.size();j++){
+                if (matrix[i][j]==-1){
+                    builder1.append("|"+matrix[i][j]+"|  ");
+                }
+                else {
+                    builder1.append("| "+matrix[i][j]+"|  ");
+                }
+            }
+            i++;
+            builder1.append("\n");
+        }
+
+        return (builder1.toString());
+    }
 }
 
 public class Main {
-
     public static void main(String args[])
     {
-
         // Объект графа создан.
         Graph<Integer> g = new Graph<Integer>();
-
 //        добавляются ребра.
 //        Поскольку граф является двунаправленным, логическое двунаправленное значение передается как истинное.
-
         g.addEdge(0, 1,"ноль","один",1, false);
         g.addEdge(0, 4,"один","четыре",2, false);
         g.addEdge(1, 2,"один","два",3, false);
         g.addEdge(1, 3,"один","три",4, false);
-        g.addEdge(1, 4,"один","четыре",5, false);
-        g.addEdge(2, 3,"два","три",6, false);
-        g.addEdge(3, 4,"три","четыре",7, false);
-        g.editEdge(0,1,2);
-        g.addVertex(5,"a");
-        g.editVertex(5,"b");
-        g.addVertex(6,"c");
-        g.deleteEdge(1,2);
+        g.addEdge(3, 4,"один","четыре",5, false);
+        g.addEdge(3, 5,"два","пять",6, false);
+
         // выводит граф
         System.out.println("Graph(список инцидентности):\n"
                 + g.toString());
-        g.first(2);
-        g.nextValue(2,5);
-        // дает количество вершин графа.
-        g.getVertexCount();
+        System.out.println("Graph(матрица инцидентности):\n"
+                +g.showGraph());
 
-        // Дает количество ребер в графе.
-        g.getEdgesCount(true);
-
-        // Сообщает, присутствует ли край или нет.
-        g.hasEdge(3, 4);
-
-        // Сообщает, присутствует ли вершина или нет
-        g.hasVertex(5);
     }
 }
