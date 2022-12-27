@@ -166,9 +166,11 @@ class Graph<T> {
         ListIterator<T> ite = map.get(vertex).listIterator();
         while (ite.hasNext()) {
             T adj = ite.next();
-            System.out.println(adj);
-            System.out.println(map.get(adj));
+            System.out.println(adj+"имеет вершины"+(map.get(adj)));
+            for (T v:map.get(adj)){
+                System.out.println(v+" "+visited.get(ite));
 
+            }
             if (!visited.get(vertex)){
                 dfs(adj);
             }
