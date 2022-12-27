@@ -19,7 +19,7 @@ class Graph<T> {
     private Map<T, List<T>> map = new HashMap<>();
     private Map<T,String> markslist=new HashMap<>();
     private Map<String,Integer> weightlist=new HashMap<>();
-
+    private boolean visited[];
     //добавить узел
     public void addVertex(T s){
         map.put(s, new LinkedList<T>());
@@ -157,16 +157,28 @@ class Graph<T> {
 
         }
     }
-    public void dfs(){
-        Stack<T> stack = new Stack<>();
-        for (T v : map.keySet()) {
-            for(T w : map.get(v)){
-                stack.push((T) map.get(w));
+
+    public void dfs(T vertex){
+        Map <T,Boolean> visited = new HashMap<>();
+        ArrayList <T> path=new ArrayList<>();
+        visited.put(vertex,true);
+        System.out.println(vertex + " "+visited);
+        ListIterator<T> ite = map.get(vertex).listIterator();
+        while (ite.hasNext()) {
+            T adj = ite.next();
+            System.out.println(adj);
+            System.out.println(map.get(adj));
+
+            if (!visited.get(vertex)){
+                dfs(adj);
             }
-            System.out.println(stack);
         }
     }
-
+    public void dfsiterator(){
+        for(T v : map.keySet()){
+            dfs(v);
+        }
+    }
     // Выводит список смежности каждой вершины.
     @Override
     public String toString()
@@ -268,7 +280,7 @@ public class Main {
         g.addEdge(1, 3,"один","три",4, false);
         g.addEdge(3, 4,"один","четыре",5, false);
         g.addEdge(3, 5,"два","пять",6, false);
-        g.dfs();
+        g.dfsiterator();
         String[] options = {"1- ПОКАЗАТЬ СПИСОК ИНЦИДЕНТНОСТИ",
                 "2- ПОКАЗАТЬ МАТРИЦУ ИНЦИДЕНТНОСТИ",
                 "3- Exit",
