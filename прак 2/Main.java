@@ -1,5 +1,7 @@
 import java.util.*;
 
+import static java.lang.System.exit;
+
 /*      1.	FIRST(v) - возвращает индекс первой вершины, смежной с вершиной v. Если вершина v не имеет смежных вершин, то возвращается "нулевая" вершина .
         2.	NEXT(v, i)- возвращает индекс вершины, смежной с вершиной v, следующий за индексом i. Если i — это индекс последней вершины, смежной с вершиной v, то возвращается .
         3.	VERTEX(v, i) - возвращает вершину с индексом i из множества вершин, смежных с v.
@@ -155,6 +157,15 @@ class Graph<T> {
 
         }
     }
+    public void dfs(){
+        Stack<T> stack = new Stack<>();
+        for (T v : map.keySet()) {
+            for(T w : map.get(v)){
+                stack.push((T) map.get(w));
+            }
+            System.out.println(stack);
+        }
+    }
 
     // Выводит список смежности каждой вершины.
     @Override
@@ -239,6 +250,12 @@ class Graph<T> {
 }
 
 public class Main {
+    public static void printMenu(String[] options){
+        for (String option : options){
+            System.out.println(option);
+        }
+        System.out.print("Choose your option : ");
+    }
     public static void main(String args[])
     {
         // Объект графа создан.
@@ -251,12 +268,33 @@ public class Main {
         g.addEdge(1, 3,"один","три",4, false);
         g.addEdge(3, 4,"один","четыре",5, false);
         g.addEdge(3, 5,"два","пять",6, false);
-
+        g.dfs();
+        String[] options = {"1- ПОКАЗАТЬ СПИСОК ИНЦИДЕНТНОСТИ",
+                "2- ПОКАЗАТЬ МАТРИЦУ ИНЦИДЕНТНОСТИ",
+                "3- Exit",
+        };
+        Scanner scanner = new Scanner(System.in);
+        int option = 1;
+        while (option!=3){
+            printMenu(options);
+            try {
+                option = scanner.nextInt();
+                switch (option){
+                    case 1: System.out.println("Graph(список инцидентности):\n"
+                            + g.toString());; break;
+                    case 2:  System.out.println("Graph(матрица инцидентности):\n"
+                            +g.showGraph()); break;
+                    case 3: exit(0);
+                }
+            }
+            catch (Exception ex){
+                System.out.println("Please enter an integer value between 1 and " + options.length);
+                scanner.next();
+            }
+        }
         // выводит граф
-        System.out.println("Graph(список инцидентности):\n"
-                + g.toString());
-        System.out.println("Graph(матрица инцидентности):\n"
-                +g.showGraph());
+
+
 
     }
 }
