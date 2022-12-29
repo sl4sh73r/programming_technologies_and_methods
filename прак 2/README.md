@@ -24,11 +24,27 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 | ![граф](https://github.com/sl4sh73r/programming_technologies_and_methods/blob/main/прак%202/46вар_graph.jpg) |
 
 ---
-| ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ | 
-| --- |
+
+ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ 
 ```java
  public void addVertex(T s, String mark) {
         markslist.put(s, mark);
         map.put(s, new LinkedList<T>());
     }
  ```
+ADD_Е(v, w, c) - добавить ДУГУ (здесь c — вес, цена дуги (v,w))
+```java
+public void addEdge(T source, T destination, int weight, boolean bidirectional) {
+        String indexEdge = (source + "" + destination);
+        if (!map.containsKey(source)) addVertex(source);
+
+        if (!map.containsKey(destination)) addVertex(destination);
+        map.get(source).add(destination);
+        weightlist.put(indexEdge, weight);
+        if (bidirectional == true) {
+            String indexEdgeRev = (destination + "" + source);
+            map.get(destination).add(source);
+            weightlist.put(indexEdgeRev, weight);
+        }
+    }
+```
