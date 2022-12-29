@@ -1,7 +1,7 @@
 import java.util.*;
 
 import static java.lang.System.exit;
-
+import static java.lang.System.setOut;
 /*      1.	FIRST(v) - возвращает индекс первой вершины, смежной с вершиной v. Если вершина v не имеет смежных вершин, то возвращается "нулевая" вершина .
         2.	NEXT(v, i)- возвращает индекс вершины, смежной с вершиной v, следующий за индексом i. Если i — это индекс последней вершины, смежной с вершиной v, то возвращается .
         3.	VERTEX(v, i) - возвращает вершину с индексом i из множества вершин, смежных с v.
@@ -19,7 +19,6 @@ class Graph<T> {
     private Map<T, List<T>> map = new HashMap<>();
     private Map<T,String> markslist=new HashMap<>();
     private Map<String,Integer> weightlist=new HashMap<>();
-    private boolean visited[];
     //добавить узел
     public void addVertex(T s){
         map.put(s, new LinkedList<T>());
@@ -128,10 +127,24 @@ class Graph<T> {
             return false;
         }
     }
-    public void nextValue(T sourse,int i) {
-        if (map.containsKey(i+1))
-            System.out.println("индекс вершины, смежной с вершиной "+ sourse+", следующий за индексом "+ i+": " + map.get(sourse).get(0));
-        else System.out.println("вершина \uF04C");
+    public void nextValue(T sourse,int i){
+        if (map.containsKey(i+1)){
+            if (map.get(sourse).isEmpty()){//если в заданном значении ниче нет
+                for (T kek:map.keySet()){//проверяем для всех значений графа
+                    if (map.get(kek).contains(sourse)){//если кто-то из значений имеет наше значение
+                        if ((int)kek>i){//и если оно больше i
+                            System.out.println(kek);//выводим его
+                        }
+                    }
+                }
+            }
+            for (T kek:map.get(sourse)){
+                System.out.print(kek+">"+i+":");
+                if ((int)kek>i){
+                    System.out.println("индекс вершины, смежной с вершиной "+ sourse+", следующий за индексом "+ i+": ");
+                }
+            }
+        }else {System.out.println("такой вешины нет \uF04C");}
     }
     public void first(T sourse) {
         System.out.println("первая смежная вершина с "+ sourse + ":" + map.get(sourse).get(0));
@@ -157,30 +170,30 @@ class Graph<T> {
 
         }
     }
-
+    Map <T,Boolean> visited = new HashMap<>();
+    ArrayList <T> path=new ArrayList<>();
     public void dfs(T vertex){
-        Map <T,Boolean> visited = new HashMap<>();
-        ArrayList <T> path=new ArrayList<>();
         visited.put(vertex,true);
-        System.out.println(vertex + " "+visited);
         ListIterator<T> ite = map.get(vertex).listIterator();
+        if (map.get(vertex).isEmpty()){
+            path.add(vertex);
+            System.out.println(path);
+            path.remove(vertex);
+        }
         while (ite.hasNext()) {
             T adj = ite.next();
-            System.out.println(adj+"имеет вершины"+(map.get(adj)));
-            for (T v:map.get(adj)){
-                System.out.println(v+" "+visited.get(ite));
-
-            }
-            if (!visited.get(vertex)){
+            path.remove(vertex);
+            if (visited.get(adj)==null){
+                path.add(vertex);
                 dfs(adj);
             }
         }
     }
-    public void dfsiterator(){
-        for(T v : map.keySet()){
-            dfs(v);
-        }
-    }
+//    public void dfsiterator(){
+//        for(T v : map.keySet()){
+//            dfs(v);
+//        }
+//    }
     // Выводит список смежности каждой вершины.
     @Override
     public String toString()
@@ -208,6 +221,7 @@ class Graph<T> {
         ArrayList<String> columnlist = new ArrayList();
         final String RESET="\u001B[0m";
         final String RED = "\u001B[31m";
+
         //получаем массивы с элементами row и column
         for (T v : map.keySet()) {
             rowlist.add(v+"");
@@ -216,7 +230,6 @@ class Graph<T> {
             }
         }
 
-
         //заподняем билдер элементами(подписанная матрица инцидентности)
         builder1.append("\t");
         for (int i = 0; i < columnlist.size(); i++) {
@@ -224,7 +237,7 @@ class Graph<T> {
         }
         builder1.append("\n");
 
-
+        //заполняем двумерный массив
         int[][] matrix = new int[columnlist.size()][rowlist.size()];
         for (int i=0;i<columnlist.size();i++){
             for (int j=0;j<rowlist.size();j++){
@@ -268,7 +281,7 @@ public class Main {
         for (String option : options){
             System.out.println(option);
         }
-        System.out.print("Choose your option : ");
+        System.out.print("Выберите свой вариант: ");
     }
     public static void main(String args[])
     {
@@ -282,27 +295,31 @@ public class Main {
         g.addEdge(1, 3,"один","три",4, false);
         g.addEdge(3, 4,"один","четыре",5, false);
         g.addEdge(3, 5,"два","пять",6, false);
-        g.dfsiterator();
         String[] options = {"1- ПОКАЗАТЬ СПИСОК ИНЦИДЕНТНОСТИ",
                 "2- ПОКАЗАТЬ МАТРИЦУ ИНЦИДЕНТНОСТИ",
-                "3- Exit",
+                "3- ПОКАЗАТЬ ПУТИ(на)",
+                "4- Exit",
         };
         Scanner scanner = new Scanner(System.in);
         int option = 1;
-        while (option!=3){
+        while (option!=4){
             printMenu(options);
             try {
                 option = scanner.nextInt();
                 switch (option){
                     case 1: System.out.println("Graph(список инцидентности):\n"
-                            + g.toString());; break;
+                            + g.toString()); break;
                     case 2:  System.out.println("Graph(матрица инцидентности):\n"
                             +g.showGraph()); break;
-                    case 3: exit(0);
+                    case 3:  System.out.println("Graph(все пути):\n");
+                        g.dfs(0);
+                        break;
+
+                    case 4: exit(0);
                 }
             }
             catch (Exception ex){
-                System.out.println("Please enter an integer value between 1 and " + options.length);
+                System.out.println("Введите целое число от 1 до " + options.length);
                 scanner.next();
             }
         }
