@@ -24,7 +24,7 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 | ![граф](https://github.com/sl4sh73r/programming_technologies_and_methods/blob/main/прак%202/46вар_graph.jpg) |
 
 ---
-
+- ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ
 ```java
  public void addVertex(T s, String mark) {
         markslist.put(s, mark);
