@@ -14,7 +14,6 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 
 ---
 
-
 Реализовать задание (заданный алгоритм) с использованием методов АТД «Граф» (1 балл из 4)
 | вар | Алгоритм | Способ представления графа | 
 | --- | --- | --- |
@@ -24,3 +23,11 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 | --- |
 | ![граф](https://github.com/sl4sh73r/programming_technologies_and_methods/blob/main/прак%202/46вар_graph.jpg) |
 
+---
+
+```java
+ public void addVertex(T s, String mark) {
+        markslist.put(s, mark);
+        map.put(s, new LinkedList<T>());
+    }
+``
