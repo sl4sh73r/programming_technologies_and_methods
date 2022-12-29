@@ -30,4 +30,4 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
         markslist.put(s, mark);
         map.put(s, new LinkedList<T>());
     }
-``
+```
