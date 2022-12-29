@@ -26,9 +26,9 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 ---
 | ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ | 
 | --- |
-| ```java
+```java
  public void addVertex(T s, String mark) {
         markslist.put(s, mark);
         map.put(s, new LinkedList<T>());
-    }```
-|
+    }
+ ```
