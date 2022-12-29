@@ -56,18 +56,6 @@ NEXT(v, i)- возвращает индекс вершины, смежной с 
         }
     }
 ```
-DEL_V(<имя>) - удалить УЗЕЛ
-```java
-public void deleteVertex(T s) {
-        map.remove(s);
-    }
-```
-DEL_Е(v, w) – удалить ДУГУ
-```java
-public void deleteEdge(T source, T destination) {
-        map.get(source).remove(destination);
-    }
-```
 ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ 
 ```java
  public void addVertex(T s, String mark) {
@@ -89,5 +77,17 @@ public void addEdge(T source, T destination, int weight, boolean bidirectional) 
             map.get(destination).add(source);
             weightlist.put(indexEdgeRev, weight);
         }
+    }
+```
+DEL_V(<имя>) - удалить УЗЕЛ
+```java
+public void deleteVertex(T s) {
+        map.remove(s);
+    }
+```
+DEL_Е(v, w) – удалить ДУГУ
+```java
+public void deleteEdge(T source, T destination) {
+        map.get(source).remove(destination);
     }
 ```
