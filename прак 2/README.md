@@ -24,6 +24,8 @@ EDIT_Е(v, w, <новый вес дуги>) - изменить вес ДУГИ
 | ![граф](https://github.com/sl4sh73r/programming_technologies_and_methods/blob/main/прак%202/46вар_graph.jpg) |
 
 ---
+
+
 FIRST(v) - возвращает индекс первой вершины, смежной с вершиной v. Если вершина v не имеет смежных вершин, то возвращается "нулевая" вершина
 ```java
    public void first(T sourse) {
@@ -52,6 +54,18 @@ NEXT(v, i)- возвращает индекс вершины, смежной с 
         } else {
             System.out.println("такой вешины нет \uF04C");
         }
+    }
+```
+DEL_V(<имя>) - удалить УЗЕЛ
+```java
+public void deleteVertex(T s) {
+        map.remove(s);
+    }
+```
+DEL_Е(v, w) – удалить ДУГУ
+```java
+public void deleteEdge(T source, T destination) {
+        map.get(source).remove(destination);
     }
 ```
 ADD_V(<имя>, <метка, mark>) - добавить УЗЕЛ 
