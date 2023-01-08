@@ -15,14 +15,10 @@ class OBST{
     int[][] R =new int[NMAX][NMAX]; //root matrix
     //static int[] q =new int[NMAX]; //unsuccesful searches
     int[] p =new int[NMAX]; //frequencies
-
-
-
     //static int NUMBER_OF_KEYS; //number of keys in the tree
 
-
     public Node ROOT=new Node();
-    static int[] KEYS =new int[NMAX];
+    int[] KEYS =new int[NMAX];
     void COMPUTE_W_C_R(int NUMBER_OF_KEYS){
 
         int x, min;
@@ -131,12 +127,6 @@ class OBST{
             DISPLAY(ROOT.right, nivel+1);
         }
     }
-    void TASK(Node ROOTA,Node ROOTB){
-        ArrayList<Integer> C = new ArrayList<>();
-        C.addAll(A);
-        C.addAll(B);
-        System.out.println(C);
-    }
     void OPTIMAL_BINARY_SEARCH_TREE(int NUMBER_OF_KEYS)
     {
         float average_cost_per_weight;
@@ -146,7 +136,6 @@ class OBST{
         System.out.println("The cost per weight ratio is:\n" + average_cost_per_weight);
         ROOT = CONSTRUCT_OBST(0, NUMBER_OF_KEYS);
         inOrder(ROOT);
-        ROOT = CONSTRUCT_OBST(0, NUMBER_OF_KEYS);
         postOrder(ROOT);
         System.out.println("\nTree");
         DISPLAY(ROOT,0);
@@ -188,10 +177,6 @@ class Main{
             System.out.print(" frequency = ");
             tree.p[i]=sc.nextInt();
         }
-//        for(int i = 0; i <= NUMBER_OF_KEYS; i++) {
-//            System.out.print("q["+ i+"]=");
-//            OBST.q[i]=sc.nextInt();
-//        }
     }
     public static void main(String[] args)  {
 
