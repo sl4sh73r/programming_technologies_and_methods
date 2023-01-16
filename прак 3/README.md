@@ -1,6 +1,5 @@
 <p align="center">
-  
-![чумплумп](https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif) 
+ <img src="https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif" alt="animated" />
 </p>
 
 ---
