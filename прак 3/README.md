@@ -179,4 +179,5 @@ void COMPUTE_W_C_R(int NUMBER_OF_KEYS){
     }
 ```
 ---
+
 ![бибоп](https://i.gifer.com/2z1u.gif)
