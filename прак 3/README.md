@@ -32,7 +32,7 @@
 Припишем каждой вершине дерева Vi вес wi, 
 пропорциональный частоте поиска этой вершины. Сумма 
 весов всех вершин дает вес дерева W. Каждая вершина Vi расположена на высоте hi, корень расположен на высоте 1. 
-Высота вершины равна количеству операций сравнения, необходимых для поиска этой вершины. Определим средневзвешенную высоту дерева с n вершинами следующим образом:
+Высота вершины равна количеству операций сравнения, необходимых для поиска этой вершины. Определим средневзвешенную высоту дерева с n вершинами следующим образом(1.1):
 
 $$
 \begin{align}
@@ -45,5 +45,38 @@ $$
 
 **Пример.** Рассмотрим множество из трех ключей V1=1, V2=2, V3=3 со следующими весами: w1=60, w2=30, w3=10, W=100. Эти три ключа можно расставить в дереве поиска пятью различными способами.
 ![Пример](https://github.com/sl4sh73r/programming_technologies_and_methods/blob/main/прак%203/OBST_BE_LIKE.jpg) 
-
 ---
+## Практическая часть
+___Структура узла___
+```java
+static class Node{
+        int KEY;
+        Node left, right;
+    }
+```
+___Обход древа___
+```java
+void preOrder(Node ROOT){
+        if(ROOT != null) {
+            System.out.print(ROOT.KEY+" ");
+            preOrder(ROOT.left);
+            preOrder(ROOT.right);
+        }
+    }
+    ArrayList<Integer> B = new ArrayList<>();
+    void inOrder(Node ROOT){
+        if(ROOT != null) {
+            inOrder(ROOT.left);
+            B.add(ROOT.KEY);
+            inOrder(ROOT.right);
+        }
+    }
+    ArrayList<Integer> A = new ArrayList<>();
+    void postOrder(Node ROOT){
+        if(ROOT != null) {
+            postOrder(ROOT.left);
+            postOrder(ROOT.right);
+            A.add(ROOT.KEY);
+        }
+    }
+```
