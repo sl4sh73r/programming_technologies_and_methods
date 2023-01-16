@@ -1,5 +1,5 @@
 <p align="center">
- <img src="https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif" alt="animated" />
+ <img src="https://media.tenor.com/zEu93Ny6wL8AAAAC/onizuka-smoking.gif" alt="animated" />
 </p>
 
 ---
