@@ -1,5 +1,6 @@
-                                            ![чумплумп](https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif) 
-
+<p align="center">
+![чумплумп](https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif) 
+</p>
 ---
 ## Задание
 В рамках домашней работы №1 требуется программно Реализовать в виде программы абстрактный тип данных «Дерево» согласно варианту. 
