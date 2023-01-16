@@ -1,4 +1,4 @@
-![чумплумп](https://media.tenor.com/_D-OkgrYtYsAAAAC/mugen-pt.gif) 
+![чумплумп](https://media.tenor.com/DUAGrJNlAUcAAAAC/fuu-samurai.gif) 
 
 ---
 ## Задание
