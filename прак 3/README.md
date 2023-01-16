@@ -1,5 +1,5 @@
-![бипбоп](https://media.tenor.com/A44ug7s67TEAAAAC/food-noodles.gif) 
-![бипбуп](https://i.gifer.com/2z1u.gif)
+![чумплумп](https://media.tenor.com/_D-OkgrYtYsAAAAC/mugen-pt.gif) 
+
 ---
 ## Задание
 В рамках домашней работы №1 требуется программно Реализовать в виде программы абстрактный тип данных «Дерево» согласно варианту. 
