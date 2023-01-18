@@ -1,13 +1,4 @@
 package Graphs.DirectedGraphs;
-/******************************************************************************
- *  Compilation:  javac Graphs.DirectedGraphs.AdjMatrixGraph.java
- *  Execution:    java Graphs.DirectedGraphs.AdjMatrixGraph V E
- *  Dependencies: fundamentals.ProgrammingModel.StdOut.java
- *
- *  A graph, implemented using an adjacency matrix.
- *  Parallel edges are disallowed; self-loops are allowd.
- *
- ******************************************************************************/
 import fundamentals.ProgrammingModel.StdOut;
 import fundamentals.ProgrammingModel.StdRandom;
 
