@@ -11,13 +11,6 @@ public class Digraph {
     private int E;                 // number of edges in this digraph
     private Bag<Integer>[] adj;    // adj[v] = adjacency list for vertex v
     private int[] indegree;        // indegree[v] = indegree of vertex v
-
-    /**
-     * Initializes an empty digraph with <em>V</em> vertices.
-     *
-     * @param  V the number of vertices
-     * @throws IllegalArgumentException if {@code V < 0}
-     */
     public Digraph(int V) {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Digraph must be non-negative");
         this.V = V;
