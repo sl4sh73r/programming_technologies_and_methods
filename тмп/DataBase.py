@@ -42,7 +42,10 @@ class Database:
             print("Файла нет")
 
     def blob_to_image(self, blob):
-        with io.BytesIO(blob) as stream:
-            image = Image.open(stream)
-            return image
+        try:
+            with io.BytesIO(blob) as stream:
+                image = Image.open(stream)
+                return image
+        except Exception as e:
+            print(f"Error blob_to_image: {e}")
 
