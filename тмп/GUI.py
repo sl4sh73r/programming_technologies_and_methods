@@ -64,26 +64,37 @@ class GUI:
         self.tree.column("#3", width=300, stretch=tk.NO)
         self.tree.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
 
-        # Заполнение таблицы
+        # Заполнение таблицы в последствии поменять на функцию и заменить здесь и в refresh_table
+        from PIL import Image
+        import io
+
         cities = self.db.get_all_cities()
+        # Создаем фрейм для изображения
+        canvas_frame = tk.Frame(self.tree)
+        canvas_frame.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
+
         for city in cities:
-            if city[3]:
-                self.tree.insert("", tk.END, text="", image=self.image_path_label, values=(city[0], city[1], city[2]))
-            else:
+            print(city[1], city[2], city[3][:1])
+            if city[3]:  # если есть данные изображения в базе данных
+                # создаем объект изображения из бинарных данных, используя модуль Pillow
+                img_data = io.BytesIO(city[3])
+                img = Image.open(img_data)
+                img = img.resize((100, 100))  # изменяем размер изображения
+
+                # создаем объект изображения Tkinter, используя метод Tk.PhotoImage()
+                tk_img = ImageTk.PhotoImage(img)
+
+                # добавляем изображение на canvas
+                canvas = tk.Canvas(canvas_frame, width=100, height=100)
+                canvas.pack(side=tk.LEFT, padx=5, pady=5)
+                canvas.create_image(0, 0, image=tk_img, anchor=tk.NW)
+                # добавляем элемент в Treeview
+                self.tree.insert("", tk.END, text="", values=(city[0], city[1], city[2]), image=tk_img)
+            else:  # если данных изображения нет в базе данных
                 self.tree.insert("", tk.END, text="", values=(city[0], city[1], city[2]))
 
     def refresh_table(self):
-        # удаление всех элементов из treeview
-        for item in self.tree.get_children():
-            self.tree.delete(item)
-
-        # заново заполнение treeview
-        cities = self.db.get_all_cities()
-        self.images = []
-        for city in cities:
-            img = ImageTk.PhotoImage(self.db.blob_to_image(city[3]))
-            self.images.append(img)
-            self.tree.insert("", tk.END, text="", image=img, values=(city[0], city[1], city[2]))
+        pass
 
     def add_city_window(self):
         # Создание окна
@@ -92,6 +103,10 @@ class GUI:
         # Фрейм для полей ввода
         input_frame = ttk.Frame(self.add_window, padding=10)
         input_frame.grid(row=0, column=0)
+
+        # Настройка ширины столбцов
+        input_frame.columnconfigure(0, minsize=100)  # минимальная ширина столбца с названием
+        input_frame.columnconfigure(1, width=200)  # фиксированная ширина столбца с изображением
 
         # Поля ввода
         name_label = ttk.Label(input_frame, text="Название:")
@@ -113,6 +128,8 @@ class GUI:
 
         self.image_path = tk.StringVar()
         self.image_path.set("")
+        canvas = tk.Canvas(input_frame, width=10, height=10)
+        canvas.grid(row=2, column=2, padx=5, pady=5)
         self.image_path_label = ttk.Label(input_frame, textvariable=self.image_path)
         self.image_path_label.grid(row=2, column=1, padx=5, pady=5)
 
