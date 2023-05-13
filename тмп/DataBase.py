@@ -1,7 +1,5 @@
-import io
-import sqlite3
-from PIL import Image, ImageTk
 
+import sqlite3
 
 class Database:
     def __init__(self):
@@ -21,12 +19,31 @@ class Database:
         self.cur.execute("DELETE FROM cities WHERE id=?", (id,))
         self.conn.commit()
 
+    def edit_city(self, id, name, description, image_blob):
+        # Get the city with the given id
+        city = self.get_city_by_id(id)
+        if not city:
+            print("City not found")
+            return
+
+        # Update the fields if they are not None
+        if name=="": name=city[1]
+        if description=="": description=city[2]
+        if image_blob is None: image_blob=city[3]
+
+        # Update the city in the database
+        self.cur.execute("UPDATE cities SET name=?, description=?, image=? WHERE id=?",
+                         (name, description, image_blob, id))
+        self.conn.commit()
     def get_all_cities(self):
         self.cur.execute("SELECT * FROM cities")
         return self.cur.fetchall()
 
     def get_city_by_id(self, id):
         self.cur.execute("SELECT * FROM cities WHERE id=?", (id,))
+        return self.cur.fetchone()
+    def get_city_by_name(self, name):
+        self.cur.execute("SELECT * FROM cities WHERE name=?", (name,))
         return self.cur.fetchone()
 
     def close_connection(self):
@@ -40,12 +57,4 @@ class Database:
             print('image_to_blob-отработал')
         except FileNotFoundError as e:
             print("Файла нет")
-
-    def blob_to_image(self, blob):
-        try:
-            with io.BytesIO(blob) as stream:
-                image = Image.open(stream)
-                return image
-        except Exception as e:
-            print(f"Error blob_to_image: {e}")
 
