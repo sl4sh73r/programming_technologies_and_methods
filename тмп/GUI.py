@@ -1,3 +1,4 @@
+import io
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from PIL import Image, ImageTk
@@ -18,13 +19,25 @@ class GUI:
         self.root.mainloop()
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
 
+    # def on_select(self, event):
+    #     selected_item = event.widget.selection()[0]
+    #     city = self.db.get_city_by_id(selected_item)
+    #     self.desc_var.set(city[2])
+    #     img = ImageHandler(city[3]).get_image((300, 300))
+    #     self.image_path_label.configure(image=img)
+    #     self.image_path_label.image = img
+
     def on_select(self, event):
         selected_item = event.widget.selection()[0]
-        city = self.db.get_city_by_id(selected_item)
-        self.desc_var.set(city[2])
-        img = ImageHandler(city[3]).get_image((300, 300))
+        self.city = self.db.get_city_by_id(selected_item)
+        self.desc_var.set(self.city[2])
+        # Обновляем картинку города
+        img = ImageTk.PhotoImage(Image.open(self.city[3]))
         self.image_path_label.configure(image=img)
         self.image_path_label.image = img
+
+    def exit_app(self):
+        self.root.quit()
     #выбор изолбражения
     def select_image(self):
         self.file_path = filedialog.askopenfilename()
@@ -34,23 +47,46 @@ class GUI:
             self.image_path_label.configure(image=image)
             self.image_path_label.image = image
 
+    def show_city_info(self):
+        # Очищаем Treeview перед обновлением списка городов
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+
+        # Получаем список городов из базы данных
+        cities = self.db.get_all_cities()
+
+        # Заполняем Treeview новыми данными
+        for city in cities:
+            self.tree.insert("", "end", values=(city[0], city[1], city[2]))
+
     def create_widgets(self):
         # Фрейм для вывода данных
         main_frame = ttk.Frame(self.root, padding=10)
         main_frame.grid(row=0, column=0)
 
-        # Кнопки
-        buttons_frame = ttk.Frame(main_frame)
-        buttons_frame.grid(row=4, column=0, columnspan=3, padx=5, pady=5)
+        # Создаем меню
+        menu_bar = Menu(self.root)
+        self.root.config(menu=menu_bar)
+        # Создаем пункты меню
+        file_menu = Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Файл", menu=file_menu)
+        file_menu.add_command(label="Добавить", command=self.add_city_window, accelerator="Ctrl+N")
+        file_menu.add_command(label="Изменить", command=self.edit_city_window, accelerator="Ctrl+O")
+        file_menu.add_command(label="Удалить", command=lambda :self.delete_city(self.city[0]), accelerator="Ctrl+S")
+        file_menu.add_separator()
+        file_menu.add_command(label="Выход", command=self.exit_app, accelerator="Ctrl+X")
+        # Создаем обработчики нажатия клавиш на клавиатуре
+        self.root.bind("<Control-n>", lambda event: self.add_city_window())
+        self.root.bind("<Control-o>", lambda event: self.edit_city_window())
+        self.root.bind("<Control-x>", lambda event: self.exit_app())
 
-        add_button = ttk.Button(buttons_frame, text="Добавить", command=self.add_city_window)
-        add_button.grid(row=0, column=0, padx=5, pady=5)
+        # Создаем второе подменю
+        info_menu = Menu(menu_bar, tearoff=0)
+        menu_bar.add_cascade(label="Справка", menu=info_menu)
+        info_menu.add_command(label="Содержание")
+        info_menu.add_separator()
+        info_menu.add_command(label="О программе",command=self.show_about)
 
-        edit_button = ttk.Button(buttons_frame, text="Изменить", command=self.edit_city_window)
-        edit_button.grid(row=0, column=1, padx=5, pady=5)
-
-        delete_button = ttk.Button(buttons_frame, text="Удалить", command=lambda :self.delete_city(city[0]))
-        delete_button.grid(row=0, column=2, padx=5, pady=5)
 
         # Таблица
         self.tree = ttk.Treeview(main_frame, columns=("ID", "Name", "Description"))
@@ -64,37 +100,22 @@ class GUI:
         self.tree.column("#3", width=300, stretch=tk.NO)
         self.tree.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
 
-        # Заполнение таблицы в последствии поменять на функцию и заменить здесь и в refresh_table
-        from PIL import Image
-        import io
-
-        cities = self.db.get_all_cities()
-        # Создаем фрейм для изображения
-        canvas_frame = tk.Frame(self.tree)
-        canvas_frame.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
-
-        for city in cities:
-            print(city[1], city[2], city[3][:1])
-            if city[3]:  # если есть данные изображения в базе данных
-                # создаем объект изображения из бинарных данных, используя модуль Pillow
-                img_data = io.BytesIO(city[3])
-                img = Image.open(img_data)
-                img = img.resize((100, 100))  # изменяем размер изображения
-
-                # создаем объект изображения Tkinter, используя метод Tk.PhotoImage()
-                tk_img = ImageTk.PhotoImage(img)
-
-                # добавляем изображение на canvas
-                canvas = tk.Canvas(canvas_frame, width=100, height=100)
-                canvas.pack(side=tk.LEFT, padx=5, pady=5)
-                canvas.create_image(0, 0, image=tk_img, anchor=tk.NW)
-                # добавляем элемент в Treeview
-                self.tree.insert("", tk.END, text="", values=(city[0], city[1], city[2]), image=tk_img)
-            else:  # если данных изображения нет в базе данных
-                self.tree.insert("", tk.END, text="", values=(city[0], city[1], city[2]))
+        # Заполнение таблицы
+        self.show_city_info()
 
     def refresh_table(self):
-        pass
+        def refresh_table(self):
+            # удаляем все записи из таблицы
+            for i in self.tree.get_children():
+                self.tree.delete(i)
+
+            # добавляем новые записи
+            self.show_city_info()
+
+            # выделяем первую запись в таблице
+            if self.tree.get_children():
+                self.tree.selection_set(self.tree.get_children()[0])
+                self.on_select(None)
 
     def add_city_window(self):
         # Создание окна
@@ -104,9 +125,6 @@ class GUI:
         input_frame = ttk.Frame(self.add_window, padding=10)
         input_frame.grid(row=0, column=0)
 
-        # Настройка ширины столбцов
-        input_frame.columnconfigure(0, minsize=100)  # минимальная ширина столбца с названием
-        input_frame.columnconfigure(1, width=200)  # фиксированная ширина столбца с изображением
 
         # Поля ввода
         name_label = ttk.Label(input_frame, text="Название:")
@@ -140,8 +158,8 @@ class GUI:
         # Фрейм для кнопок
         buttons_frame = ttk.Frame(self.add_window, padding=10)
         buttons_frame.grid(row=1, column=0, sticky=tk.E)
+
         # Кнопки
-        print(self.name_entry.get(), self.desc_entry.get)
         commit_button=ttk.Button(input_frame,text="Применить",
                                  command=lambda: self.db.add_city(self.name_entry.get(),self.desc_entry.get(),self.db.image_to_blob(self.file_path)))
         commit_button.grid(row=4, column=0, padx=5, pady=5)
@@ -153,65 +171,7 @@ class GUI:
         self.root.wait_window(self.add_window)
 
     def edit_city_window(self):
-        # Окно для редактирования города
-        edit_window = tk.Toplevel(self.root)
-        edit_window.title("Редактировать город")
-
-        # Фрейм для полей ввода
-        input_frame = ttk.Frame(edit_window, padding=10)
-        input_frame.grid(row=0, column=0)
-
-        # Получение выделенного элемента из списка городов
-        selected_item = self.cities_listbox.curselection()
-        if not selected_item:
-            messagebox.showerror("Ошибка", "Пожалуйста, выберите город для редактирования")
-            edit_window.destroy()
-            return
-        else:
-            selected_item = int(selected_item[0])
-            city_id = self.cities[selected_item][0]
-            name = self.cities[selected_item][1]
-            description = self.cities[selected_item][2]
-
-        # Поля ввода
-        name_label = ttk.Label(input_frame, text="Название:")
-        name_label.grid(row=0, column=0, sticky=tk.W)
-
-        name_entry = ttk.Entry(input_frame, width=50)
-        name_entry.insert(0, name)
-        name_entry.grid(row=0, column=1)
-
-        desc_label = ttk.Label(input_frame, text="Описание:")
-        desc_label.grid(row=1, column=0, sticky=tk.W)
-
-        desc_entry = ttk.Entry(input_frame, width=50)
-        desc_entry.insert(0, description)
-        desc_entry.grid(row=1, column=1)
-
-        image_label = ttk.Label(input_frame, text="Изображение:")
-        image_label.grid(row=2, column=0, sticky=tk.W)
-
-        image_entry = ttk.Entry(input_frame, width=50)
-        image_entry.grid(row=2, column=1)
-
-        # browse_button = ttk.Button(input_frame, text="Обзор...", command=lambda: self.browse_image(image_entry))
-        # browse_button.grid(row=2, column=2)
-
-        # Фрейм для кнопок
-        buttons_frame = ttk.Frame(edit_window, padding=10)
-        buttons_frame.grid(row=1, column=0, sticky=tk.E)
-
-        # Кнопки
-        save_button = ttk.Button(buttons_frame, text="Сохранить",
-                                 command=lambda: self.save_city(city_id, name_entry.get(), desc_entry.get(),
-                                                                image_entry.get(), edit_window))
-        save_button.pack(side=tk.LEFT, padx=5, pady=5)
-
-        cancel_button = ttk.Button(buttons_frame, text="Отмена", command=edit_window.destroy)
-        cancel_button.pack(side=tk.LEFT, padx=5, pady=5)
-
-        # Отображение окна
-        edit_window.grab_set()
+        pass
 
     def delete_city(self, city_id):
         """Удаление города из базы данных"""
@@ -221,7 +181,13 @@ class GUI:
             self.refresh_table()
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка удаления города: {str(e)}")
+    def show_about(self):
+        about_window = tk.Toplevel(self.root)
+        about_window.title("О программе")
+        about_window.geometry("300x100")
 
+        about_label = tk.Label(about_window, text="Программа для работы с базой данных городов")
+        about_label.pack(pady=10)
     def close_and_refresh(self):
         self.add_window.destroy()
         self.refresh_table()
