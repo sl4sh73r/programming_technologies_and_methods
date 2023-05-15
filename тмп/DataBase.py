@@ -53,7 +53,5 @@ class Database:
             with open(image_path, 'rb') as f:
                 img_bytes = f.read()
             return sqlite3.Binary(img_bytes)
-            print('image_to_blob-отработал')
         except FileNotFoundError as e:
             print("Файла нет")
-
