@@ -1,5 +1,4 @@
 import io
-import os
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
@@ -17,7 +16,10 @@ class GUI:
         self.root = tk.Tk()
         self.root.geometry("812x196")
         self.root.title("Фонд AmDB")
-        tk.Label(self.root,background="#002f55",foreground="white",text="Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   Удалить-(Ctrl+S),   Выход-(Ctrl+X)",anchor=tk.W,padx=15,font=("Arial", 10)).place(x=5,y=175,width=802,height=15)
+        tk.Label(self.root, background="#002f55", foreground="white",
+                 text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
+                      "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
+                 anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=175, width=802, height=15)
         self.file_path = ""
         self.image_handler = ImageHandler(None)
 
@@ -26,6 +28,7 @@ class GUI:
         self.root.mainloop()
 
     def on_select(self, event):
+        global img
         selected_item = event.widget.curselection()
         if selected_item:
             index = selected_item[0]
@@ -42,7 +45,7 @@ class GUI:
             img = ImageTk.PhotoImage(im)
             self.canvas.configure(image=img)
 
-            #Имеет право на существование
+            # Имеет право на существование
             # im.thumbnail((330, 165))
             # im.save(f'{data}.png')
             # photo_image1 = tk.PhotoImage(file=(f'{data}.png'))
@@ -51,17 +54,19 @@ class GUI:
             # os.remove(f'{data}.png')
             # self.show_picture_in_gui(data)
 
-            #Если убрать метод программа не будет выводить фото
+            # Если убрать метод программа не будет выводить фото
             self.show_disc_in_gui(data)
 
-    def show_picture_in_gui(self,data):
+    def show_picture_in_gui(self, data):
         # Здесь могла бы быть ваша реклама
         pass
 
-    def show_disc_in_gui(self,data):
+    def show_disc_in_gui(self, data):
+
         self.city = self.db.get_city_by_name(data)
         self.decription.config(text=self.city[2])
-        если_убрать_этот_текст_то_программа_перестанет_выводить_фото
+        # если_убрать_этот_текст_то_программа_перестанет_выводить_фото
+
     def exit_app(self):
         self.root.quit()
 
@@ -83,6 +88,41 @@ class GUI:
         for city in cities:
             self.tree.insert(0, (city[1]))
 
+    def find_name_city(self):
+
+        find_window = tk.Toplevel(self.root)
+        find_window.title("Поиск города")
+
+        # Фрейм для полей ввода
+        find_frame = ttk.Frame(find_window, padding=10)
+        find_frame.grid(row=0, column=0)
+
+        # Поля ввода
+        name_label = ttk.Label(find_frame, text="Название:")
+        name_label.grid(row=0, column=0, sticky=tk.W)
+
+        name_entry = ttk.Entry(find_frame, width=30)
+        name_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        commit_button = ttk.Button(find_frame, text="Поиск",
+                                   command=lambda: check_city(name_entry))
+        commit_button.grid(row=4, column=0, padx=5, pady=5)
+
+        def check_city(name_entry):
+            # try:
+            cities = self.db.get_all_cities()
+            for city in cities:
+                if name_entry.get() == city[1]:
+                    index = self.tree.get(0, "end").index(city[1])
+                    self.tree.select_set(index)
+                    self.tree.event_generate("<<ListboxSelect>>")
+
+            #         else:
+            #             raise Exception(f'Города «{name_entry.get()}» нет в БД')
+            #
+            # except Exception as e:
+            #     messagebox.showerror("Ошибка", f"Ошибка поиска: {str(e)}")
+
     def create_widgets(self):
         # Фрейм для вывода данных
         main_frame = ttk.Frame(self.root, padding=190)
@@ -94,13 +134,15 @@ class GUI:
         # Создаем пункты меню
         file_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Файл", menu=file_menu)
-
+        file_menu.add_command(label="Найти", command=self.find_name_city, accelerator="Ctrl+F")
+        file_menu.add_separator()
         file_menu.add_command(label="Добавить", command=self.add_city_window, accelerator="Ctrl+N")
         file_menu.add_command(label="Изменить", command=self.edit_city_window, accelerator="Ctrl+O")
         file_menu.add_command(label="Удалить", command=lambda: self.delete_city(self.city[0]), accelerator="Ctrl+S")
         file_menu.add_separator()
         file_menu.add_command(label="Выход", command=self.exit_app, accelerator="Ctrl+X")
         # Создаем обработчики нажатия клавиш на клавиатуре
+        self.root.bind("<Control-f>", lambda event: self.find_name_city())
         self.root.bind("<Control-n>", lambda event: self.add_city_window())
         self.root.bind("<Control-o>", lambda event: self.edit_city_window())
         self.root.bind("<Control-s>", lambda event: self.delete_city(self.city[0]))
@@ -114,10 +156,13 @@ class GUI:
         def show_contents():
             contents_window = tk.Toplevel(self.root)
             contents_window.title("Содержание")
-            contents_window.geometry("300x200")
+            contents_window.geometry("300x225")
             contents_window.resizable(False, False)
 
-            contents_label = tk.Label(contents_window, text="Здесь будет содержание")
+            contents_label = tk.Label(contents_window, text="База данных 'Известные города РФ'\n\nПозволяет:\n "
+                                                            "находить / добавлять / изменять / удалять\n информацию\n\nКлавиши "
+                                                            "программы:\nНайти-(Ctrl + F)\nДобавить-(Ctrl + "
+                                                            "N)\nИзменить-(Ctrl+O)\nУдалить-(Ctrl+S)\nВыход-(Ctrl+X)")
             contents_label.pack(pady=20)
 
         info_menu.add_command(label="Содержание", command=show_contents)
@@ -127,10 +172,10 @@ class GUI:
         def show_about():
             about_window = tk.Toplevel(self.root)
             about_window.title("О программе")
-            about_window.geometry("300x200")
+            about_window.geometry("300x75")
             about_window.resizable(False, False)
 
-            about_label = tk.Label(about_window, text="Здесь будет информация о программе")
+            about_label = tk.Label(about_window, text="База данных: 'Известные города РФ'\n🧛🏻‍ create by LeoNeed M ")
             about_label.pack(pady=20)
 
             # Сделать окно модальным
@@ -139,18 +184,18 @@ class GUI:
         info_menu.add_command(label="О программе", command=show_about)
 
         # Таблица
-        self.tree = tk.Listbox(borderwidth=1,relief="solid")
+        self.tree = tk.Listbox(borderwidth=1, relief="solid")
         self.tree.place(x=5, y=5, width=130, height=166)
         # Заполнение таблицы
         self.show_city_info()
 
-        self.canvas = tk.Label(borderwidth=1,relief="solid")
+        self.canvas = tk.Label(borderwidth=1, relief="solid")
         self.canvas.place(x=140, y=5, width=330, height=165)
 
         # descFrame = ttk.LabelFrame()
-        self.decription = tk.Label(text="",borderwidth=1,relief="solid")
+        self.decription = tk.Label(text="", borderwidth=1, relief="solid",wraplength=300    , justify="center")
         # descFrame.place(x=330 + 130 + 10, y=5, width=330, height=165)
-        self.decription.place(x=330 + 130 + 10+7, y=5, width=330, height=165)
+        self.decription.place(x=330 + 130 + 10 + 7, y=5, width=330, height=165)
 
     def refresh_table(self):
         # удаляем все записи из таблицы
@@ -221,7 +266,8 @@ class GUI:
         input_frame.grid(row=0, column=0)
 
         # Поля ввода
-        name_label = ttk.Label(input_frame, text="Название:")
+
+        name_label = ttk.Label(input_frame, text=f"Изменить '{self.city[1]}' на:")
         name_label.grid(row=0, column=0, sticky=tk.W)
 
         self.name_entry = ttk.Entry(input_frame, width=30)
@@ -255,16 +301,16 @@ class GUI:
 
         # Кнопки
         commit_button = ttk.Button(input_frame, text="Применить",
-                                   command=lambda: self.db.edit_city(self.city[0],self.name_entry.get(), self.desc_entry.get(),
-                                                                    self.db.image_to_blob(self.file_path)))
+                                   command=lambda: self.db.edit_city(self.city[0], self.name_entry.get(),
+                                                                     self.desc_entry.get(),
+                                                                     self.db.image_to_blob(self.file_path)))
         commit_button.grid(row=4, column=0, padx=5, pady=5)
-        cancel_button = ttk.Button(input_frame, text="Закрыть", command=self.close_and_refresh)
+        cancel_button = ttk.Button(input_frame, text="Закрыть", command=self.close_and_refresh_e)
         cancel_button.grid(row=4, column=2, padx=5, pady=5)
 
         # Отображение окна
         self.edit_window.grab_set()
         self.root.wait_window(self.edit_window)
-
     def delete_city(self, city_id):
         """Удаление города из базы данных"""
         try:
@@ -277,7 +323,9 @@ class GUI:
     def close_and_refresh(self):
         self.add_window.destroy()
         self.refresh_table()
-
+    def close_and_refresh_e(self):
+        self.edit_window.destroy()
+        self.refresh_table()
 
 if __name__ == "__main__":
     db = Database()
