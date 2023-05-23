@@ -1,4 +1,5 @@
 import io
+import sys
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
@@ -8,24 +9,66 @@ from PIL import Image
 from DataBase import Database
 from Images import ImageHandler
 
+import configparser
+
 
 class GUI:
     def __init__(self, database):
         self.db = database
-
+        # self.auth()
         self.root = tk.Tk()
-        self.root.geometry("812x196")
+        self.W=self.root.winfo_screenwidth()
+        self.H=self.root.winfo_screenheight()
+        self.L=(self.W-800)//2
+        self.T=(self.H-600)//2
+        self.root.geometry(f"800x600+{self.L}+{self.T}")
         self.root.title("Фонд AmDB")
         tk.Label(self.root, background="#002f55", foreground="white",
                  text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
                       "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
-                 anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=175, width=802, height=15)
+                 anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=575, width=790, height=15)
         self.file_path = ""
         self.image_handler = ImageHandler(None)
 
         self.create_widgets()
         self.tree.bind("<<ListboxSelect>>", self.on_select)
+        # self.root.eval('tk::PlaceWindow . center')
         self.root.mainloop()
+
+    def auth(self):
+        def closeForm():
+            sys.exit(0)
+        def loginToDB():
+
+            config = configparser.ConfigParser()
+            config.read('config.conf')
+            login = config.get('main', 'login')
+            password = config.get('main', 'user')
+
+            self.root1 = tk.Tk()
+            self.W = self.root.winfo_screenwidth()
+            self.H = self.root.winfo_screenheight()
+            self.L = (self.W - 800) // 2
+            self.T = (self.H - 600) // 2
+            self.root.geometry(f"800x600+{self.L}+{self.T}")
+            self.root.title("Фонд AmDB")
+            login_frame = ttk.Frame(self.add_window, padding=10)
+            login_frame.grid(row=0, column=0)
+
+            # Поля ввода
+            login_label = ttk.Label(login_frame, text="Имя пользователя:")
+            login_label.grid(row=0, column=0, sticky=tk.W)
+
+            login_entry = ttk.Entry(login_frame, width=30)
+            login_entry.grid(row=0, column=1, padx=5, pady=5)
+
+            pass_label = ttk.Label(login_frame, text="Пароль:")
+            pass_label.grid(row=1, column=0, sticky=tk.W)
+
+            pass_entry = ttk.Entry(login_frame, width=30)
+            pass_entry.grid(row=1, column=1, padx=5, pady=5)
+            # if login_entry.get()==login and pass_label==password:
+            self.root1.mainloop()
 
     def on_select(self, event):
         global img
@@ -101,7 +144,7 @@ class GUI:
         name_label = ttk.Label(find_frame, text="Название:")
         name_label.grid(row=0, column=0, sticky=tk.W)
 
-        name_entry = ttk.Entry(find_frame, width=30)
+        name_entry = ttk.Entry(find_frame,width=30)
         name_entry.grid(row=0, column=1, padx=5, pady=5)
 
         commit_button = ttk.Button(find_frame, text="Поиск",
@@ -184,18 +227,18 @@ class GUI:
         info_menu.add_command(label="О программе", command=show_about)
 
         # Таблица
-        self.tree = tk.Listbox(borderwidth=1, relief="solid")
-        self.tree.place(x=5, y=5, width=130, height=166)
+        self.tree = tk.Listbox(borderwidth=1, relief="solid",selectmode=tk.BROWSE)
+        self.tree.place(x=5, y=5, width=130, height=565)
         # Заполнение таблицы
         self.show_city_info()
 
         self.canvas = tk.Label(borderwidth=1, relief="solid")
-        self.canvas.place(x=140, y=5, width=330, height=165)
+        self.canvas.place(x=140, y=5, width=330, height=565)
 
         # descFrame = ttk.LabelFrame()
         self.decription = tk.Label(text="", borderwidth=1, relief="solid",wraplength=300    , justify="center")
         # descFrame.place(x=330 + 130 + 10, y=5, width=330, height=165)
-        self.decription.place(x=330 + 130 + 10 + 7, y=5, width=330, height=165)
+        self.decription.place(x=330 + 130 + 10 + 7, y=5, width=330, height=565)
 
     def refresh_table(self):
         # удаляем все записи из таблицы
@@ -272,14 +315,18 @@ class GUI:
 
         self.name_entry = ttk.Entry(input_frame, width=30)
         self.name_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.name_entry.insert(0,self.city[1])
 
         desc_label = ttk.Label(input_frame, text="Описание:")
         desc_label.grid(row=1, column=0, sticky=tk.W)
+
 
         self.desc_var = tk.StringVar()
         self.desc_var.set("")
         self.desc_entry = ttk.Entry(input_frame, width=50, textvariable=self.desc_var)
         self.desc_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        self.desc_entry.insert(0, self.city[2])
 
         image_label = ttk.Label(input_frame, text="Изображение:")
         image_label.grid(row=2, column=0, sticky=tk.W)
