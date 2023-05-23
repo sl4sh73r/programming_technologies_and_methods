@@ -16,59 +16,57 @@ class GUI:
     def __init__(self, database):
         self.db = database
         # self.auth()
-        self.root = tk.Tk()
-        self.W=self.root.winfo_screenwidth()
-        self.H=self.root.winfo_screenheight()
-        self.L=(self.W-800)//2
-        self.T=(self.H-600)//2
-        self.root.geometry(f"800x600+{self.L}+{self.T}")
-        self.root.title("Фонд AmDB")
-        tk.Label(self.root, background="#002f55", foreground="white",
-                 text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
-                      "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
-                 anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=575, width=790, height=15)
+
+        config = configparser.ConfigParser()
+        config.read('config.conf')
+        self.login = config.get('main', 'login')
+        self.password = config.get('main', 'password')
+
+        self.root1 = tk.Tk()
+
+        self.center_window(self.root1, 430, 150)
+        self.root1.title("Войдите пожалуйста")
+
         self.file_path = ""
         self.image_handler = ImageHandler(None)
 
-        self.create_widgets()
-        self.tree.bind("<<ListboxSelect>>", self.on_select)
-        # self.root.eval('tk::PlaceWindow . center')
-        self.root.mainloop()
+        login_frame = ttk.Frame(self.root1, padding=10)
+        login_frame.grid(row=0, column=0)
 
-    def auth(self):
-        def closeForm():
-            sys.exit(0)
-        def loginToDB():
+        # Поля ввода
+        login_label = ttk.Label(login_frame, text="Имя пользователя:")
+        login_label.grid(row=0, column=0, sticky=tk.W)
 
-            config = configparser.ConfigParser()
-            config.read('config.conf')
-            login = config.get('main', 'login')
-            password = config.get('main', 'user')
+        self.login_entry = ttk.Entry(login_frame, width=30)
+        self.login_entry.grid(row=0, column=1, padx=5, pady=5)
+        pass_label = ttk.Label(login_frame, text="Пароль:")
+        pass_label.grid(row=1, column=0, sticky=tk.W)
+        self.pass_entry = ttk.Entry(login_frame, width=30)
+        self.pass_entry.grid(row=1, column=1, padx=5, pady=5)
+        ok_button = ttk.Button(login_frame, text="Войти", command=self.ok)
+        ok_button.grid(row=3, column=1, padx=5, pady=5)
+        self.root1.mainloop()
 
-            self.root1 = tk.Tk()
-            self.W = self.root.winfo_screenwidth()
-            self.H = self.root.winfo_screenheight()
-            self.L = (self.W - 800) // 2
-            self.T = (self.H - 600) // 2
-            self.root.geometry(f"800x600+{self.L}+{self.T}")
+        if ((self.logs == self.login) and (self.passw == self.password)):
+            self.root = tk.Tk()
             self.root.title("Фонд AmDB")
-            login_frame = ttk.Frame(self.add_window, padding=10)
-            login_frame.grid(row=0, column=0)
+            self.center_window(self.root, 800, 600)
 
-            # Поля ввода
-            login_label = ttk.Label(login_frame, text="Имя пользователя:")
-            login_label.grid(row=0, column=0, sticky=tk.W)
+            tk.Label(self.root, background="#002f55", foreground="white",
+                     text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
+                          "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
+                     anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=575, width=790, height=15)
 
-            login_entry = ttk.Entry(login_frame, width=30)
-            login_entry.grid(row=0, column=1, padx=5, pady=5)
+            self.create_widgets()
+            self.tree.bind("<<ListboxSelect>>", self.on_select)
+            self.root.mainloop()
+        else:
+            messagebox.showerror("Ошибка","Введен неверный пароль")
+            sys.exit(0)
 
-            pass_label = ttk.Label(login_frame, text="Пароль:")
-            pass_label.grid(row=1, column=0, sticky=tk.W)
-
-            pass_entry = ttk.Entry(login_frame, width=30)
-            pass_entry.grid(row=1, column=1, padx=5, pady=5)
-            # if login_entry.get()==login and pass_label==password:
-            self.root1.mainloop()
+    def ok(self):
+        self.logs,self.passw=self.login_entry.get(),self.pass_entry.get()
+        self.root1.destroy()
 
     def on_select(self, event):
         global img
@@ -135,7 +133,7 @@ class GUI:
 
         find_window = tk.Toplevel(self.root)
         find_window.title("Поиск города")
-
+        self.center_toplevel(find_window,310,100)
         # Фрейм для полей ввода
         find_frame = ttk.Frame(find_window, padding=10)
         find_frame.grid(row=0, column=0)
@@ -199,7 +197,8 @@ class GUI:
         def show_contents():
             contents_window = tk.Toplevel(self.root)
             contents_window.title("Содержание")
-            contents_window.geometry("300x225")
+
+            self.center_toplevel(contents_window,300,225)
             contents_window.resizable(False, False)
 
             contents_label = tk.Label(contents_window, text="База данных 'Известные города РФ'\n\nПозволяет:\n "
@@ -215,7 +214,7 @@ class GUI:
         def show_about():
             about_window = tk.Toplevel(self.root)
             about_window.title("О программе")
-            about_window.geometry("300x75")
+            self.center_toplevel(about_window, 300, 75)
             about_window.resizable(False, False)
 
             about_label = tk.Label(about_window, text="База данных: 'Известные города РФ'\n🧛🏻‍ create by LeoNeed M ")
@@ -236,7 +235,7 @@ class GUI:
         self.canvas.place(x=140, y=5, width=330, height=565)
 
         # descFrame = ttk.LabelFrame()
-        self.decription = tk.Label(text="", borderwidth=1, relief="solid",wraplength=300    , justify="center")
+        self.decription = tk.Label(text="", borderwidth=1, relief="solid",wraplength=300, justify="center")
         # descFrame.place(x=330 + 130 + 10, y=5, width=330, height=165)
         self.decription.place(x=330 + 130 + 10 + 7, y=5, width=330, height=565)
 
@@ -245,11 +244,27 @@ class GUI:
         self.tree.delete(0, tk.END)
         # добавляем новые записи
         self.show_city_info()
-
+    def center_window(self,window,rW,rH):
+        W = window.winfo_screenwidth()
+        H = window.winfo_screenheight()
+        L = (W - rW) // 2
+        T = (H - rH) // 2
+        window.geometry(f"{rW}x{rH}+{L}+{T}")
+    def center_toplevel(self,window,tW,tH):
+        W=self.root.winfo_x()
+        H=self.root.winfo_y()
+        Wr=self.root.winfo_width()
+        Hr=self.root.winfo_height()
+        T = W + (Wr // 2)-tW//2
+        L = H + (Hr // 2)-tH//2
+        window.geometry(f"{tW}x{tH}+{T}+{L}")
     def add_city_window(self):
         # Создание окна
+
         self.add_window = tk.Toplevel(self.root)
+        self.center_toplevel(self.add_window,500,175)
         self.add_window.title("Добавить город")
+
 
         # Фрейм для полей ввода
         input_frame = ttk.Frame(self.add_window, padding=10)
@@ -304,6 +319,7 @@ class GUI:
         # Создание окна
         self.edit_window = tk.Toplevel(self.root)
         self.edit_window.title("Изменить город")
+        self.center_toplevel(self.edit_window, 600, 175)
         # Фрейм для полей ввода
         input_frame = ttk.Frame(self.edit_window, padding=10)
         input_frame.grid(row=0, column=0)
