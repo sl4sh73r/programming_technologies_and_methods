@@ -48,23 +48,23 @@ class AuthGui:
         self.window.mainloop()
 
     def get_data(self):
-        self.enLog,self.enPass= self.username_entry.get(), self.password_entry.get()
+        enLog,enPass= self.username_entry.get(), self.password_entry.get()
         return enLog,enPass
     def check_data(self):
-        # config = configparser.ConfigParser()
-        # config.read('config.conf')
-        # login = config.get('main', 'login')
-        # password = config.get('main', 'password')
-        enLog, enPass = "", ""
+        config = configparser.ConfigParser()
+        config.read('config.conf')
+        login = config.get('main', 'login')
+        password = config.get('main', 'password')
+
         enLog,enPass=self.get_data()
-        if enLog=="user" and enPass=="user":
+        if enLog==login and enPass==password:
+            print(login,password)
             self.window.destroy()
             db = Database()
             GUI(db)
 if __name__ == "__main__":
     enLog, enPass="",""
     Auapp = AuthGui()
-    print(Auapp.get_data())
 
 
 
