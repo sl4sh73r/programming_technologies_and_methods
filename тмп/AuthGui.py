@@ -12,7 +12,13 @@ class AuthGui:
     def __init__(self):
 
         self.window = tk.Tk()
-        # GUI.center_window(self.window, 450,230)
+        W = self.window.winfo_screenwidth()
+        H = self.window.winfo_screenheight()
+        rW=450
+        rH=250
+        L = (W - rW) // 2
+        T = (H - rH) // 2
+        self.window.geometry(f"{rW}x{rH}+{L}+{T}")
         self.window.title("LogIn")
 
         font_header = ('Arial', 15)
@@ -65,6 +71,3 @@ class AuthGui:
 if __name__ == "__main__":
     enLog, enPass="",""
     Auapp = AuthGui()
-
-
-
