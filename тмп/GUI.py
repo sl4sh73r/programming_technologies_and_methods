@@ -1,5 +1,4 @@
 import io
-import sys
 
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
@@ -7,66 +6,22 @@ from tkinter import ttk, messagebox, filedialog
 from PIL import Image
 
 from DataBase import Database
-from Images import ImageHandler
-
-import configparser
-
 
 class GUI:
     def __init__(self, database):
         self.db = database
-        # self.auth()
+        self.root = tk.Tk()
+        self.root.title("Фонд AmDB")
+        self.center_window(self.root, 800, 600)
 
-        config = configparser.ConfigParser()
-        config.read('config.conf')
-        self.login = config.get('main', 'login')
-        self.password = config.get('main', 'password')
+        tk.Label(self.root, background="#002f55", foreground="white",
+                 text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
+                      "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
+                 anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=575, width=790, height=15)
 
-        self.root1 = tk.Tk()
-
-        self.center_window(self.root1, 430, 150)
-        self.root1.title("Войдите пожалуйста")
-
-        self.file_path = ""
-        self.image_handler = ImageHandler(None)
-
-        login_frame = ttk.Frame(self.root1, padding=10)
-        login_frame.grid(row=0, column=0)
-
-        # Поля ввода
-        login_label = ttk.Label(login_frame, text="Имя пользователя:")
-        login_label.grid(row=0, column=0, sticky=tk.W)
-
-        self.login_entry = ttk.Entry(login_frame, width=30)
-        self.login_entry.grid(row=0, column=1, padx=5, pady=5)
-        pass_label = ttk.Label(login_frame, text="Пароль:")
-        pass_label.grid(row=1, column=0, sticky=tk.W)
-        self.pass_entry = ttk.Entry(login_frame, width=30)
-        self.pass_entry.grid(row=1, column=1, padx=5, pady=5)
-        ok_button = ttk.Button(login_frame, text="Войти", command=self.ok)
-        ok_button.grid(row=3, column=1, padx=5, pady=5)
-        self.root1.mainloop()
-
-        if ((self.logs == self.login) and (self.passw == self.password)):
-            self.root = tk.Tk()
-            self.root.title("Фонд AmDB")
-            self.center_window(self.root, 800, 600)
-
-            tk.Label(self.root, background="#002f55", foreground="white",
-                     text="Найти-(Ctrl + F),   Добавить-(Ctrl + N),   Изменить-(Ctrl+O),   "
-                          "Удалить-(Ctrl+S),   Выход-(Ctrl+X)",
-                     anchor=tk.W, padx=15, font=("Arial", 10)).place(x=5, y=575, width=790, height=15)
-
-            self.create_widgets()
-            self.tree.bind("<<ListboxSelect>>", self.on_select)
-            self.root.mainloop()
-        else:
-            messagebox.showerror("Ошибка","Введен неверный пароль")
-            sys.exit(0)
-
-    def ok(self):
-        self.logs,self.passw=self.login_entry.get(),self.pass_entry.get()
-        self.root1.destroy()
+        self.create_widgets(self.root)
+        self.tree.bind("<<ListboxSelect>>", self.on_select)
+        self.root.mainloop()
 
     def on_select(self, event):
         global img
@@ -85,15 +40,6 @@ class GUI:
             from PIL import ImageTk
             img = ImageTk.PhotoImage(im)
             self.canvas.configure(image=img)
-
-            # Имеет право на существование
-            # im.thumbnail((330, 165))
-            # im.save(f'{data}.png')
-            # photo_image1 = tk.PhotoImage(file=(f'{data}.png'))
-            # self.canvas.create_image(0, 0, image=photoImage1, anchor=tk.NW
-            # print(photo_image1, "|", img)
-            # os.remove(f'{data}.png')
-            # self.show_picture_in_gui(data)
 
             # Если убрать метод программа не будет выводить фото
             self.show_disc_in_gui(data)
@@ -164,14 +110,14 @@ class GUI:
             # except Exception as e:
             #     messagebox.showerror("Ошибка", f"Ошибка поиска: {str(e)}")
 
-    def create_widgets(self):
+    def create_widgets(self,window):
         # Фрейм для вывода данных
-        main_frame = ttk.Frame(self.root, padding=190)
+        main_frame = ttk.Frame(window, padding=190)
         main_frame.grid(row=0, column=0)
 
         # Создаем меню
-        menu_bar = tk.Menu(self.root)
-        self.root.config(menu=menu_bar)
+        menu_bar = tk.Menu(window)
+        window.config(menu=menu_bar)
         # Создаем пункты меню
         file_menu = tk.Menu(menu_bar, tearoff=0)
         menu_bar.add_cascade(label="Файл", menu=file_menu)
@@ -183,11 +129,11 @@ class GUI:
         file_menu.add_separator()
         file_menu.add_command(label="Выход", command=self.exit_app, accelerator="Ctrl+X")
         # Создаем обработчики нажатия клавиш на клавиатуре
-        self.root.bind("<Control-f>", lambda event: self.find_name_city())
-        self.root.bind("<Control-n>", lambda event: self.add_city_window())
-        self.root.bind("<Control-o>", lambda event: self.edit_city_window())
-        self.root.bind("<Control-s>", lambda event: self.delete_city(self.city[0]))
-        self.root.bind("<Control-x>", lambda event: self.exit_app())
+        window.bind("<Control-f>", lambda event: self.find_name_city())
+        window.bind("<Control-n>", lambda event: self.add_city_window())
+        window.bind("<Control-o>", lambda event: self.edit_city_window())
+        window.bind("<Control-s>", lambda event: self.delete_city(self.city[0]))
+        window.bind("<Control-x>", lambda event: self.exit_app())
 
         # Создаем второе подменю
         info_menu = tk.Menu(menu_bar, tearoff=0)
@@ -319,14 +265,15 @@ class GUI:
         # Создание окна
         self.edit_window = tk.Toplevel(self.root)
         self.edit_window.title("Изменить город")
-        self.center_toplevel(self.edit_window, 600, 175)
+        self.center_toplevel(self.edit_window, 750, 250)
+        # self.center_toplevel(self.edit_window, 600, 175)
         # Фрейм для полей ввода
         input_frame = ttk.Frame(self.edit_window, padding=10)
         input_frame.grid(row=0, column=0)
 
         # Поля ввода
 
-        name_label = ttk.Label(input_frame, text=f"Изменить '{self.city[1]}' на:")
+        name_label = ttk.Label(input_frame, text=f"Изменить на:")
         name_label.grid(row=0, column=0, sticky=tk.W)
 
         self.name_entry = ttk.Entry(input_frame, width=30)
